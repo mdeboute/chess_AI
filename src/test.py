@@ -2,8 +2,8 @@ import time
 import chess
 from random import randint, choice
 
-board = chess.Board()
 
+board = chess.Board()
 board_1 = chess.Board("r1bqkbnr/pppp1ppp/8/8/3nP3/8/PPP2PPP/RNBQKB1R w KQkq - 0 5")
 board_2 = chess.Board("r1bqkb1r/ppppnpQp/8/8/4P3/8/PPP2PPP/RNB1KB1R b KQkq - 0 6")
 
@@ -87,6 +87,7 @@ def getBetterMove(board=board):
         board.pop()
     return max(costs, key=costs.get)
 
-#print(getBetterMove(board_1))
-#print(getBetterMove(board_2))
+# print(getBetterMove(board_1))
+# print(getBetterMove(board_2))
 # it's working!!
+
