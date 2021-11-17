@@ -1,11 +1,12 @@
 import time
 import chess
-from random import randint, choice
+from random import randint, choice, shuffle
 
 
 board = chess.Board()
 board_1 = chess.Board("r1bqkbnr/pppp1ppp/8/8/3nP3/8/PPP2PPP/RNBQKB1R w KQkq - 0 5")
 board_2 = chess.Board("r1bqkb1r/ppppnpQp/8/8/4P3/8/PPP2PPP/RNB1KB1R b KQkq - 0 6")
+checkmate = chess.Board("rnbqkbnr/ppppp2p/8/5PpQ/8/8/PPPP1PPP/RNB1KBNR b KQkq - 1 3")
 
 # this function makes an exhaustive search of all the chess games by limiting the depth of
 # the search by a search parameter with the chess library and return the number of possibilities
@@ -26,68 +27,124 @@ def exhaustiveSearch(board, depth):
 # elapsed = end - start
 # print(f'Execution time: {elapsed:.2}ms')
 
-def getPiece(board=board):
-    white_piece = []
-    black_piece = []
-    for piece in board.piece_map().items():
-        symbol = str(piece[1])
-        if(symbol.islower()):
-            black_piece.append(symbol)
-        if(symbol.isupper()):
-            white_piece.append(symbol)
-    return black_piece, white_piece
 
-# print(board.piece_map().items())
+def shannonHeuristic(board):
+    if board.is_checkmate():
+        return float('inf')
+    if board.is_game_over():
+        return -float('inf')
+    if board.is_stalemate():
+        return 0
+    wP = len(board.pieces(chess.PAWN, chess.WHITE))
+    bP = len(board.pieces(chess.PAWN, chess.BLACK))
+    wN = len(board.pieces(chess.KNIGHT, chess.WHITE))
+    bN = len(board.pieces(chess.KNIGHT, chess.BLACK))
+    wB = len(board.pieces(chess.BISHOP, chess.WHITE))
+    bB = len(board.pieces(chess.BISHOP, chess.BLACK))
+    wR = len(board.pieces(chess.ROOK, chess.WHITE))
+    bR = len(board.pieces(chess.ROOK, chess.BLACK))
+    wQ = len(board.pieces(chess.QUEEN, chess.WHITE))
+    bQ = len(board.pieces(chess.QUEEN, chess.BLACK))
+    res = 9*(wQ-bQ) + 5*(wR-bR) + 3*(wB-bB + wN-bN) + (wP-bP)
+    return res
 
-def shannonWeight(list):
-    score = 0
-    for piece in list:
-        if(piece == 'k'):
-            score -= 200
-        elif(piece == 'K'):
-            score += 200
-        elif(piece == 'q'):
-            score -= 9
-        elif (piece == 'Q'):
-            score += 9
-        elif(piece == 'r'):
-            score -= 5
-        elif(piece == 'R'):
-            score += 5
-        elif(piece == 'b'):
-            score -= 3
-        elif(piece == 'B'):
-            score += 3
-        elif(piece == 'n'):
-            score -= 3
-        elif(piece == 'N'):
-            score += 3
-        elif(piece == 'p'):
-            score -= 1
-        else:
-            score += 1
-    return score
+#print(shannonHeuristic(board))
+#print(shannonHeuristic(checkmate))
 
-def evaluator(board=board):
-    black, white = getPiece(board)
-    if(board.turn == chess.WHITE):
-        return shannonWeight(white) - abs(shannonWeight(black))
-    if(board.turn == chess.BLACK):
-        return abs(shannonWeight(black)) - shannonWeight(white)
+# minimax function which return the best move to play for the current board
+def minimax(board, depth):
+    if depth == 0 or board.is_game_over():
+        return None, shannonHeuristic(board)
+    if board.turn == chess.WHITE:
+        best_score = float('-inf')
+        best_move = None
+        for move in board.legal_moves:
+            board.push(move)
+            score = minimax(board, depth - 1)[1]
+            board.pop()
+            if score > best_score:
+                best_score = score
+                best_move = move
+        return best_move, best_score
+    else:
+        best_score = float('inf')
+        best_move = None
+        for move in board.legal_moves:
+            board.push(move)
+            score = minimax(board, depth - 1)[1]
+            board.pop()
+            if score < best_score:
+                best_score = score
+                best_move = move
+        return best_move, best_score
 
-def getBetterMove(board=board):
-    costs = dict()
-    moves = board.generate_legal_moves()
-    for m in moves:
-        board.push(m)
-        if(board.turn == chess.WHITE):
-            costs[m] = abs(evaluator(board))
-        if(board.turn == chess.BLACK):
-            costs[m] = -abs(evaluator(board))
+#print(minimax(board_1, 3))
+#print(minimax(board_2, 3))
+
+def minimaxRoot(board, depth):
+    if depth == 0 or board.is_game_over():
+        return None, shannonHeuristic(board)
+    best_score = float('-inf')
+    best_move = None
+    for move in board.legal_moves:
+        board.push(move)
+        score = minimax(board, depth - 1)[1]
         board.pop()
-    return max(costs, key=costs.get)
+        if score > best_score:
+            best_score = score
+            best_move = move
+    return best_move, best_score
 
-# print(getBetterMove(board_1))
-# print(getBetterMove(board_2))
-# it's working!!
+# Random Player match against Minimax level 3
+def match_1():
+    board = chess.Board()
+    while not board.is_game_over():
+        if board.turn == chess.WHITE:
+            print("---------------")
+            print(board)
+            move = input("\nEnter your move: ")
+            print("\n")
+            board.push_san(move)
+        else:
+            print(board)
+            move = minimaxRoot(board, 3)[0]
+            board.push(move)
+    print(board)
 
+# match_1()
+
+# minimax algorithm with alpha-beta pruning which return the best move to play for the current board
+def minimax_pruning(board, depth, alpha, beta):
+    if depth == 0 or board.is_game_over():
+        return None, shannonHeuristic(board)
+    if board.turn == chess.WHITE:
+        best_score = float('-inf')
+        best_move = None
+        for move in board.legal_moves:
+            board.push(move)
+            score = minimax_pruning(board, depth - 1, alpha, beta)[1]
+            board.pop()
+            if score > best_score:
+                best_score = score
+                best_move = move
+            if best_score > beta:
+                return best_move, best_score
+            alpha = max(alpha, best_score)
+        return best_move, best_score
+    else:
+        best_score = float('inf')
+        best_move = None
+        for move in board.legal_moves:
+            board.push(move)
+            score = minimax_pruning(board, depth - 1, alpha, beta)[1]
+            board.pop()
+            if score < best_score:
+                best_score = score
+                best_move = move
+            if best_score < alpha:
+                return best_move, best_score
+            beta = min(beta, best_score)
+        return best_move, best_score
+
+
+# iterative deepening apllied to alpha-beta pruning
