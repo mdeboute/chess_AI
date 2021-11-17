@@ -3,11 +3,15 @@ import chess
 from random import randint, choice
 
 
-board = chess.Board("r1bqkbnr/pppp1ppp/8/8/3nP3/8/PPP2PPP/RNBQKB1R w KQkq - 0 5")
-board_2 = chess.Board("r1bqkb1r/ppppnpQp/8/8/4P3/8/PPP2PPP/RNB1KB1R b KQkq - 0 6")
+board = chess.Board(
+    "r1bqkbnr/pppp1ppp/8/8/3nP3/8/PPP2PPP/RNBQKB1R w KQkq - 0 5")
+board_2 = chess.Board(
+    "r1bqkb1r/ppppnpQp/8/8/4P3/8/PPP2PPP/RNB1KB1R b KQkq - 0 6")
 
 # this function makes an exhaustive search of all the chess games by limiting the depth of
 # the search by a search parameter with the chess library and return the number of possibilities
+
+
 def exhaustiveSearch(board, depth):
     if depth == 0 or board.is_game_over():
         return 1
@@ -25,6 +29,7 @@ def exhaustiveSearch(board, depth):
 # elapsed = end - start
 # print(f'Execution time: {elapsed:.2}ms')
 
+
 def getPiece(board=board):
     white_piece = []
     black_piece = []
@@ -37,6 +42,7 @@ def getPiece(board=board):
     return black_piece, white_piece
 
 # print(board.piece_map().items())
+
 
 def shannonWeight(list):
     score = 0
@@ -67,12 +73,14 @@ def shannonWeight(list):
             score += 1
     return score
 
+
 def evaluator(board=board):
     black, white = getPiece(board)
     if(board.turn == chess.WHITE):
         return shannonWeight(white) - abs(shannonWeight(black))
     if(board.turn == chess.BLACK):
         return abs(shannonWeight(black)) - shannonWeight(white)
+
 
 def getBetterMove(board=board):
     costs = dict()
@@ -86,6 +94,7 @@ def getBetterMove(board=board):
         board.pop()
     return max(costs, key=costs.get), costs
 
-#print(getBetterMove(board))
-#print(getBetterMove(board_2))
+
+print(getBetterMove(board))
+# print(getBetterMove(board_2))
 # it's working!!
