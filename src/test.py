@@ -10,7 +10,22 @@ def randomMove(b):
     return choice([m for m in b.generate_legal_moves()])
 
 
-board = chess.Board()
+def deroulementRandom(b):
+    '''Déroulement d'une partie d'échecs au hasard des coups possibles. Cela va donner presque exclusivement
+    des parties très longues et sans gagnant. Cela illustre cependant comment on peut jouer avec la librairie
+    très simplement.'''
+    print("----------")
+    print(b)
+    if b.is_game_over():
+        print("Resultat : ", b.result())
+        return
+    b.push(randomMove(b))
+    deroulementRandom(b)
+    b.pop()
+
+
+board = chess.Board(
+    "r1bqkbnr/pppp1ppp/8/8/3nP3/8/PPP2PPP/RNBQKB1R w KQkq - 0 5")
 board_2 = chess.Board(
     "r1bqkb1r/ppppnpQp/8/8/4P3/8/PPP2PPP/RNB1KB1R b KQkq - 0 6")
 # r1bqkbnr/pppp1ppp/8/8/3nP3/8/PPP2PPP/RNBQKB1R w KQkq - 0 5
@@ -42,16 +57,18 @@ def exhaustiveSearch(board, depth):
 # print(board.piece_map().items())
 
 
-# HEURISITQUE DE SHANNON VERSION 2
+# HEURISITQUE DE SHANNON
 
 def formuleHeuristique(board):
     if(board.is_game_over()):
-        return 0
+        return -math.inf
     if board.is_checkmate():
         if (board.turn == chess.WHITE):
             return -math.inf
         if(board.turn == chess.BLACK):
             return math.inf
+    if board.is_stalemate():
+        return 0
     heuristic = 0
     for n in board.piece_map():
         piece = board.piece_map()[n]
@@ -75,7 +92,7 @@ def formuleHeuristique(board):
 
 
 # print(board.piece_map()[2])
-print(formuleHeuristique(board))
+print(formuleHeuristique(board_2))
 
 
 def MiniMax(board, depth):
@@ -88,7 +105,7 @@ def MiniMax(board, depth):
         best_move = None
         for move in board.generate_legal_moves():
             board.push(move)
-            eval = MiniMax(board, depth-1)
+            eval = MiniMax(board, depth-1)[0]
             board.pop()
             if(eval > maxEval):
                 maxEval = eval
@@ -99,7 +116,7 @@ def MiniMax(board, depth):
         best_move = None
         for move in board.generate_legal_moves():
             board.push(move)
-            eval = MiniMax(board, depth-1)
+            eval = MiniMax(board, depth-1)[0]
             board.pop()
             if(eval < minEval):
                 minEval = eval
@@ -107,37 +124,39 @@ def MiniMax(board, depth):
         return minEval, best_move
 
 
-print(MiniMax(board, 2))
+#print(MiniMax(board, 2))
 
 
-# def minimax(board, depth, maximizingPlayer):
+# joueur aléatoire contre minimax niveau 3:
 
-#   if (depth == 0 or board.is_game_over()):
-#      return formuleHeuristique(board), None
+def match1(board):
+    n_move = 0
+    while board.is_game_over() != False:
+        if board.turn == chess.WHITE:
+            n_move = randomMove(board)
+        else:
+            n_move = MiniMax(board, 3)
+        board.push(board)
+    return n_move
 
-# if (maximizingPlayer):
-#    maxEval = -math.inf
-#   best_move = None
-#  for move in board.generate_legal_moves():
-#     board.push(move)
-#    eval = minimax(board, depth-1, False)
-#   board.pop()
-#  if(eval > maxEval):
-#     maxEval = eval
-#    best_move = move
-# return maxEval, best_move
-# else:
-#   minEval = math.inf
-#  best_move = None
-# for move in board.generate_legal_moves():
-#    board.push(move)
-#   eval = minimax(board, depth-1, True)
-#  board.pop()
-# if(eval < minEval):
-#    minEval = eval
-#   best_move = move
-# return minEval, best_move
-#print(minimax(board, 3, True))
+
+# print(match1(board))
+
+# MiniMax niveau 1 contre MiniMax niveau 3:
+
+
+def match2(board):
+    n_move = 0
+    while board.is_game_over() != False:
+        if board.turn == chess.WHITE:
+            n_move = MiniMax(board, 1)
+        else:
+            n_move = MiniMax(board, 3)
+        board.push(board)
+    return n_move
+
+
+# print(match2(board))
 
 
 def alphaBeta(board, depth, alpha, beta, maximizingPlayer):
@@ -168,28 +187,3 @@ def alphaBeta(board, depth, alpha, beta, maximizingPlayer):
 
 
 # print(alphaBeta(board, 3, math.inf, -math.inf, True))
-
-# joueur aléatoire contre minimax niveau 3:
-
-def match1(board):
-
-    while board.is_game_over() != False:
-        if board.turn == chess.WHITE:
-            n_move = randomMove(board)
-        else:
-            n_move = MiniMax(board, 3)
-        board.push(board)
-    return n_move
-
-# MiniMax niveau 1 contre MiniMax niveau 3:
-
-
-def match2(board):
-
-    while board.is_game_over() != False:
-        if board.turn == chess.WHITE:
-            n_move = MiniMax(board, 1)
-        else:
-            n_move = MiniMax(board, 3)
-        board.push(board)
-    return n_move
