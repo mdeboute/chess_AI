@@ -159,35 +159,36 @@ def MiniMax(board, depth, compter=False):
 
 # 2-4 GAMES
 
+# Prend le meilleur move de Blanc
+
+def MaxMin(board, depth):
+    if depth == 0 or board.is_game_over():
+        return formuleHeuristique(board), None
+    maxEval = -math.inf
+    best_move = None
+    for move in board.legal_moves:
+        board.push(move)
+        eval = MiniMax(board, depth - 1)[0]
+        board.pop()
+        if eval > maxEval:
+            maxEval = eval
+            best_move = move
+    return maxEval, best_move
+
 # joueur aléatoire contre minimax niveau 3:
 
 
-def match1(board, depth):
-    if board.is_game_over():
-        print("Resultat : ", board.result())
-        return
-    if board.turn == chess.WHITE:
-        e, move, n = MiniMax(board, depth)
-        board.push(move)
-        match1(board, depth)
-        board.pop()
-    if board.turn == chess.BLACK:
-        board.push(randomMove(board))
-        match1(board, depth)
-        board.pop()
+def match1(board):
+    while board.is_game_over() != False:
+        if board.turn == chess.WHITE:
+            board.push(randomMove(board))
+        if board.turn == chess.BLACK:
+            move = MaxMin(board, 3)[1]
+            board.push(move)
+    print(board)
 
 
-#print(match1(board, 3))
-
-
-# def preference(board):
-#   for move in board.piece_map():
-#      piece = board.piece_map()[move.to_square]
-#     if piece.piece_type == 1:
-#        return 8
-# else:
-#   return 0
-
+print(match1(board))
 
 # MiniMax niveau 1 contre MiniMax niveau 3:
 
