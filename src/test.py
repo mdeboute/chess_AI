@@ -27,12 +27,15 @@ def deroulementRandom(b):
 board = chess.Board(
     "r1bqkbnr/pppp1ppp/8/8/3nP3/8/PPP2PPP/RNBQKB1R w KQkq - 0 5")
 board_2 = chess.Board(
-    "r1bqkb1r/ppppnpQp/8/8/4P3/8/PPP2PPP/RNB1KB1R b KQkq - 0 6")
+    "r1bqkb1r/ppp2p1p/3p1p2/8/3QP1n1/8/PPP3PP/RNB1KB1R w KQkq - 0 9")
 # r1bqkbnr/pppp1ppp/8/8/3nP3/8/PPP2PPP/RNBQKB1R w KQkq - 0 5
 # Q7/p3k3/7p/8/8/8/PPPP1PPP/RNBQKBNR b KQ - 0 15
 
 # this function makes an exhaustive search of all the chess games by limiting the depth of
 # the search by a search parameter with the chess library and return the number of possibilities
+
+
+# 2-1
 
 
 def exhaustiveSearch(board, depth):
@@ -47,17 +50,39 @@ def exhaustiveSearch(board, depth):
         return count
 
 
-# start = time.time()
-# print(exhaustiveSearch(board, 4))
-# end = time.time()
-# elapsed = end - start
-# print(f'Execution time: {elapsed:.2}ms')
+#start = time.time()
+#print(exhaustiveSearch(board, 4))
+#end = time.time()
+#elapsed = end - start
+#print(f'Execution time: {elapsed:.2}ms')
 
 
 # print(board.piece_map().items())
 
 
-# HEURISITQUE DE SHANNON
+# 2-2 HEURISITQUE DE SHANNON
+
+# chess.SQUARES =[chess.A1,chess.]
+chess.A8
+chess.B8
+chess.C8
+chess.D8
+chess.E8
+chess.F8
+chess.G8
+chess.H8
+
+# calculer la distance entre le pion est la fin du plateau
+# si le pion est à la fin on retourne 8 sinon
+# on avance le pion d'une case
+
+# def preference(board):
+#   for n in board.piece_map():
+#      piece = board.piece_map()[n]
+#     if(piece.piece_type==1):
+#        chess.square_name
+#       if(board.square_distance(piece,chess.A8)!=0):
+
 
 def formuleHeuristique(board):
     if(board.is_game_over()):
@@ -69,6 +94,7 @@ def formuleHeuristique(board):
             return math.inf
     if board.is_stalemate():
         return 0
+    # if board.square_distance()
     heuristic = 0
     for n in board.piece_map():
         piece = board.piece_map()[n]
@@ -92,11 +118,16 @@ def formuleHeuristique(board):
 
 
 # print(board.piece_map()[2])
-print(formuleHeuristique(board_2))
+# print(formuleHeuristique(board_2))
+nbNoeuds = 0
+
+# 2-3 MINIMAX
 
 
-def MiniMax(board, depth):
-
+def MiniMax(board, depth, compter=False):
+    global nbNoeuds
+    if compter:
+        nbNoeuds += 1
     if (depth == 0 or board.is_game_over()):
         return formuleHeuristique(board), None
 
@@ -105,85 +136,148 @@ def MiniMax(board, depth):
         best_move = None
         for move in board.generate_legal_moves():
             board.push(move)
-            eval = MiniMax(board, depth-1)[0]
+            eval = MiniMax(board, depth-1, compter)[0]
             board.pop()
             if(eval > maxEval):
                 maxEval = eval
                 best_move = move
-        return maxEval, best_move
+        return maxEval, best_move, nbNoeuds
     else:
         minEval = math.inf
         best_move = None
         for move in board.generate_legal_moves():
             board.push(move)
-            eval = MiniMax(board, depth-1)[0]
+            eval = MiniMax(board, depth-1, compter)[0]
             board.pop()
             if(eval < minEval):
                 minEval = eval
                 best_move = move
-        return minEval, best_move
+        return minEval, best_move, nbNoeuds
 
 
-#print(MiniMax(board, 2))
+#print(MiniMax(board_2, 2))
 
+# 2-4 GAMES
 
 # joueur aléatoire contre minimax niveau 3:
 
-def match1(board):
-    n_move = 0
-    while board.is_game_over() != False:
-        if board.turn == chess.WHITE:
-            n_move = randomMove(board)
-        else:
-            n_move = MiniMax(board, 3)
-        board.push(board)
-    return n_move
+
+def match1(board, depth):
+    if board.is_game_over():
+        print("Resultat : ", board.result())
+        return
+    if board.turn == chess.WHITE:
+        e, move, n = MiniMax(board, depth)
+        board.push(move)
+        match1(board, depth)
+        board.pop()
+    if board.turn == chess.BLACK:
+        board.push(randomMove(board))
+        match1(board, depth)
+        board.pop()
 
 
-# print(match1(board))
+#print(match1(board, 3))
+
+
+# def preference(board):
+#   for move in board.piece_map():
+#      piece = board.piece_map()[move.to_square]
+#     if piece.piece_type == 1:
+#        return 8
+# else:
+#   return 0
+
 
 # MiniMax niveau 1 contre MiniMax niveau 3:
 
 
 def match2(board):
-    n_move = 0
+    move = None
     while board.is_game_over() != False:
         if board.turn == chess.WHITE:
-            n_move = MiniMax(board, 1)
+            move = MiniMax(board, 1)
+            board.push(move)
         else:
-            n_move = MiniMax(board, 3)
-        board.push(board)
-    return n_move
+            move = MiniMax(board, 3)
+            board.push(move)
+        board.pop()
+    if board.is_game_over():
+        print("Resultat : ", board.result())
+        return
 
 
 # print(match2(board))
 
+# 3-1 ALPHA-BETA
 
-def alphaBeta(board, depth, alpha, beta, maximizingPlayer):
+
+def alphaBeta(board, depth, alpha, beta, compter=False):
+    global nbNoeuds
+    if compter:
+        nbNoeuds += 1
     if (depth == 0 or board.is_game_over()):
-        return formuleHeuristique(board)
-    if(maximizingPlayer):
+        return formuleHeuristique(board), None
+    if board.turn == chess.WHITE:
         maxEval = -math.inf
+        best_move = None
         for move in board.generate_legal_moves():
             board.push(move)
-            eval = alphaBeta(board, depth-1, alpha, beta, False)
+            eval = alphaBeta(board, depth-1, alpha, beta, compter)[0]
             board.pop()
-            maxEval = max(maxEval, eval)
+            if(eval > maxEval):
+                maxEval = eval
+                best_move = move
             alpha = max(alpha, eval)
             if(beta <= alpha):
                 break
-            return maxEval
+        return maxEval, best_move, nbNoeuds
     else:
         minEval = math.inf
+        best_move = None
         for move in board.generate_legal_moves():
             board.push(move)
-            eval = alphaBeta(board, depth-1, alpha, beta, True)
+            eval = alphaBeta(board, depth-1, alpha, beta, compter)[0]
             board.pop()
-            minEval = min(minEval, eval)
+            if(eval < minEval):
+                minEval = eval
+                best_move = move
             beta = min(beta, eval)
             if(beta <= alpha):
                 break
-            return minEval
+        return minEval, best_move, nbNoeuds
 
 
-# print(alphaBeta(board, 3, math.inf, -math.inf, True))
+#print(alphaBeta(board_2, 2, math.inf, -math.inf))
+
+# COMPARAISON ALPHA BETA / MINIMAX
+
+# Time comparison between alphbeta and minimax
+
+#start = time.time()
+#print(alphaBeta(board, 2, math.inf, -math.inf))
+#end = time.time()
+#elapsed = end - start
+#print(f'Execution time: {elapsed:.2}ms')
+
+#start = time.time()
+#print(MiniMax(board_2, 2))
+#end = time.time()
+#elapsed = end - start
+#print(f'Execution time: {elapsed:.2}ms')
+
+# Match minimax against alphabeta
+
+
+def match3(board):
+    n_move = 0
+    while board.is_game_over() != False:
+        if board.turn == chess.WHITE:
+            n_move = MiniMax(board, 2)
+        else:
+            n_move = alphaBeta(board, 2)
+        board.push(board)
+    return n_move
+
+
+# print(match3(board))
