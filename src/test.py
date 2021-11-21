@@ -159,50 +159,46 @@ def MiniMax(board, depth, compter=False):
 
 # 2-4 GAMES
 
-# Prend le meilleur move de Blanc
-
-def MaxMin(board, depth):
-    if depth == 0 or board.is_game_over():
-        return formuleHeuristique(board), None
-    maxEval = -math.inf
-    best_move = None
-    for move in board.legal_moves:
-        board.push(move)
-        eval = MiniMax(board, depth - 1)[0]
-        board.pop()
-        if eval > maxEval:
-            maxEval = eval
-            best_move = move
-    return maxEval, best_move
-
 # joueur aléatoire contre minimax niveau 3:
 
 
 def match1(board):
-    while board.is_game_over() != False:
+    board = chess.Board()
+    while not board.is_game_over():
         if board.turn == chess.WHITE:
+            print("--------------")
+            print(board)
             board.push(randomMove(board))
-        if board.turn == chess.BLACK:
-            move = MaxMin(board, 3)[1]
+        else:
+            print("--------------")
+            print(board)
+            move = MiniMax(board, 3)[1]
             board.push(move)
     print(board)
+    if board.is_game_over():
+        print("Resultat : ", board.result())
+        return
 
 
-print(match1(board))
+# print(match1(board))
 
 # MiniMax niveau 1 contre MiniMax niveau 3:
 
 
 def match2(board):
-    move = None
-    while board.is_game_over() != False:
+    board = chess.Board()
+    while not board.is_game_over():
         if board.turn == chess.WHITE:
-            move = MiniMax(board, 1)
+            print("--------------")
+            print(board)
+            move = MiniMax(board, 1)[1]
             board.push(move)
         else:
-            move = MiniMax(board, 3)
+            print("--------------")
+            print(board)
+            move = MiniMax(board, 3)[1]
             board.push(move)
-        board.pop()
+    print(board)
     if board.is_game_over():
         print("Resultat : ", board.result())
         return
@@ -271,14 +267,22 @@ def alphaBeta(board, depth, alpha, beta, compter=False):
 
 
 def match3(board):
-    n_move = 0
-    while board.is_game_over() != False:
+    board = chess.Board()
+    while not board.is_game_over():
         if board.turn == chess.WHITE:
-            n_move = MiniMax(board, 2)
+            print("--------------")
+            print(board)
+            move = MiniMax(board, 2)[1]
+            board.push(move)
         else:
-            n_move = alphaBeta(board, 2)
-        board.push(board)
-    return n_move
+            print("--------------")
+            print(board)
+            move = alphaBeta(board, 2, -math.inf, math.inf)[1]
+            board.push(move)
+    print(board)
+    if board.is_game_over():
+        print("Resultat : ", board.result())
+        return
 
 
-# print(match3(board))
+print(match3(board))
