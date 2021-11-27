@@ -81,6 +81,8 @@ chess.H8
 #        chess.square_name
 #       if(board.square_distance(piece,chess.A8)!=0):
 
+# Cette fonction calcule la formule heuristique uniquement avec les poids des pieces.
+
 
 def formuleHeuristique(board):
     if(board.is_game_over()):
@@ -250,7 +252,7 @@ def alphaBeta(board, depth, alpha, beta, compter=False):
         return minEval, best_move, nbNoeuds
 
 
-# print(alphaBeta(board_2, 2, -math.inf, math.inf))
+#print(alphaBeta(board, 2, -math.inf, math.inf))
 
 #------------------------------------------------------------------------------#
 
@@ -298,6 +300,11 @@ def match3(board):
 #------------------------------------------------------------------------------#
 
 # 3-2:
+
+# Le but de l'iterative deepening c'est d'augmenter la profondeur au maximum et on veut être sur qu'on ne
+# dépasse pas le temps impartis (10s) à chaque résultat renvoyé.
+# La fonction renvoie le meilleur score et move à une profondeur donnée tel que le temps pour toruver
+# ces résultats est inférieur à 10 secondes.
 
 start_time = time.time()
 move_time = 10  # 10 seconds per move
@@ -355,4 +362,10 @@ def alphaBetaSearch(board, depth, alpha, beta):
         return minEval, best_move
 
 
-print(iterativeDeepeningAlphaBeta(board))
+# print(iterativeDeepeningAlphaBeta(board))
+
+
+#chess.square('e', 2)
+# ch=input()
+# print(ch)
+#board.from_square('e', 2)
