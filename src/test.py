@@ -2,6 +2,7 @@ import time
 import chess
 from random import randint, choice
 import math
+import sys
 
 
 def randomMove(b):
@@ -31,12 +32,11 @@ board_2 = chess.Board(
 # r1bqkbnr/pppp1ppp/8/8/3nP3/8/PPP2PPP/RNBQKB1R w KQkq - 0 5
 # Q7/p3k3/7p/8/8/8/PPPP1PPP/RNBQKBNR b KQ - 0 15
 
-# this function makes an exhaustive search of all the chess games by limiting the depth of
-# the search by a search parameter with the chess library and return the number of possibilities
-
 
 # 2-1
 
+# Cette fonction fait une recherche exaustive de toute les parties d'échecs à une certaine profondeur.
+# # Retourne le nombre de partie possible.
 
 def exhaustiveSearch(board, depth):
     if depth == 0 or board.is_game_over():
@@ -50,15 +50,13 @@ def exhaustiveSearch(board, depth):
         return count
 
 
-#start = time.time()
-#print(exhaustiveSearch(board, 4))
-#end = time.time()
-#elapsed = end - start
-#print(f'Execution time: {elapsed:.2}ms')
+# start = time.time()
+# print(exhaustiveSearch(board, 4))
+# end = time.time()
+# elapsed = end - start
+# print(f'Execution time: {elapsed:.2}ms')
 
-
-# print(board.piece_map().items())
-
+#------------------------------------------------------------------------------#
 
 # 2-2 HEURISITQUE DE SHANNON
 
@@ -119,9 +117,12 @@ def formuleHeuristique(board):
 
 # print(board.piece_map()[2])
 # print(formuleHeuristique(board_2))
-nbNoeuds = 0
+
+#------------------------------------------------------------------------------#
 
 # 2-3 MINIMAX
+
+nbNoeuds = 0
 
 
 def MiniMax(board, depth, compter=False):
@@ -157,6 +158,8 @@ def MiniMax(board, depth, compter=False):
 
 #print(MiniMax(board_2, 2))
 
+#------------------------------------------------------------------------------#
+
 # 2-4 GAMES
 
 # joueur aléatoire contre minimax niveau 3:
@@ -174,7 +177,6 @@ def match1(board):
             print(board)
             move = MiniMax(board, 3)[1]
             board.push(move)
-    print(board)
     if board.is_game_over():
         print("Resultat : ", board.result())
         return
@@ -198,6 +200,7 @@ def match2(board):
             print(board)
             move = MiniMax(board, 3)[1]
             board.push(move)
+    print("---------------")
     print(board)
     if board.is_game_over():
         print("Resultat : ", board.result())
@@ -205,6 +208,8 @@ def match2(board):
 
 
 # print(match2(board))
+
+#------------------------------------------------------------------------------#
 
 # 3-1 ALPHA-BETA
 
@@ -245,23 +250,27 @@ def alphaBeta(board, depth, alpha, beta, compter=False):
         return minEval, best_move, nbNoeuds
 
 
-#print(alphaBeta(board_2, 2, math.inf, -math.inf))
+# print(alphaBeta(board_2, 2, -math.inf, math.inf))
+
+#------------------------------------------------------------------------------#
 
 # COMPARAISON ALPHA BETA / MINIMAX
 
 # Time comparison between alphbeta and minimax
 
-#start = time.time()
-#print(alphaBeta(board, 2, math.inf, -math.inf))
-#end = time.time()
-#elapsed = end - start
-#print(f'Execution time: {elapsed:.2}ms')
+# start = time.time()
+# print(alphaBeta(board, 2, math.inf, -math.inf))
+# end = time.time()
+# elapsed = end - start
+# print(f'Execution time: {elapsed:.2}ms')
 
-#start = time.time()
-#print(MiniMax(board_2, 2))
-#end = time.time()
-#elapsed = end - start
-#print(f'Execution time: {elapsed:.2}ms')
+# start = time.time()
+# print(MiniMax(board, 2))
+# end = time.time()
+# elapsed = end - start
+# print(f'Execution time: {elapsed:.2}ms')
+
+#------------------------------------------------------------------------------#
 
 # Match minimax against alphabeta
 
@@ -279,10 +288,71 @@ def match3(board):
             print(board)
             move = alphaBeta(board, 2, -math.inf, math.inf)[1]
             board.push(move)
-    print(board)
     if board.is_game_over():
         print("Resultat : ", board.result())
         return
 
 
-print(match3(board))
+# print(match3(board))
+
+#------------------------------------------------------------------------------#
+
+# 3-2:
+
+start_time = time.time()
+move_time = 10  # 10 seconds per move
+
+
+def iterativeDeepeningAlphaBeta(board):
+    MaxDepth = sys.maxsize
+    start_time = time.time()
+    bestMove = None
+    for depth in range(1, MaxDepth):
+        if time.time() - start_time > move_time:
+            break
+        val = -math.inf
+        for move in board.generate_legal_moves():
+            score = alphaBetaSearch(board, depth, -math.inf, math.inf)[0]
+            if score > val:
+                val = score
+                bestMove = move
+    return val, bestMove
+
+
+def alphaBetaSearch(board, depth, alpha, beta):
+
+    if depth <= 0 or time.time() - start_time > move_time:
+        return formuleHeuristique(board), None
+    if (depth == 0 or board.is_game_over()):
+        return formuleHeuristique(board), None
+    if board.turn == chess.WHITE:
+        maxEval = -math.inf
+        best_move = None
+        for move in board.generate_legal_moves():
+            board.push(move)
+            eval = alphaBetaSearch(board, depth-1, alpha, beta)[0]
+            board.pop()
+            if(eval > maxEval):
+                maxEval = eval
+                best_move = move
+            alpha = max(alpha, eval)
+            if(beta <= alpha):
+                break
+        return maxEval, best_move
+    else:
+        minEval = math.inf
+        best_move = None
+        for move in board.generate_legal_moves():
+            board.push(move)
+            eval = alphaBetaSearch(board, depth-1, alpha, beta, )[0]
+            board.pop()
+            if(eval < minEval):
+                minEval = eval
+                best_move = move
+            beta = min(beta, eval)
+            if(beta <= alpha):
+                break
+        return minEval, best_move
+
+
+print(iterativeDeepeningAlphaBeta(board))
