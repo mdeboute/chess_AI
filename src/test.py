@@ -61,29 +61,7 @@ def exhaustiveSearch(board, depth):
 
 # 2-2 HEURISITQUE DE SHANNON
 
-# chess.SQUARES =[chess.A1,chess.]
-chess.A8
-chess.B8
-chess.C8
-chess.D8
-chess.E8
-chess.F8
-chess.G8
-chess.H8
-
-# calculer la distance entre le pion est la fin du plateau
-# si le pion est à la fin on retourne 8 sinon
-# on avance le pion d'une case
-
-# def preference(board):
-#   for n in board.piece_map():
-#      piece = board.piece_map()[n]
-#     if(piece.piece_type==1):
-#        chess.square_name
-#       if(board.square_distance(piece,chess.A8)!=0):
-
 # Cette fonction calcule la formule heuristique uniquement avec les poids des pieces.
-
 
 def formuleHeuristique(board):
     if(board.is_game_over()):
@@ -159,7 +137,7 @@ def MiniMax(board, depth, compter=False):
         return minEval, best_move, nbNoeuds
 
 
-#print(MiniMax(board_2, 2))
+# print(MiniMax(board_2, 2))
 
 #------------------------------------------------------------------------------#
 
@@ -253,7 +231,7 @@ def alphaBeta(board, depth, alpha, beta, compter=False):
         return minEval, best_move, nbNoeuds
 
 
-#print(alphaBeta(board, 2, -math.inf, math.inf))
+# print(alphaBeta(board, 2, -math.inf, math.inf))
 
 #------------------------------------------------------------------------------#
 
@@ -365,25 +343,51 @@ def alphaBetaSearch(board, depth, alpha, beta):
 
 # print(iterativeDeepeningAlphaBeta(board))
 
+#------------------------------------------------------------------------------#
 
-# def matchVsIA(board):
- #   board = chess.Board()
-  #  while not board.is_game_over():
-   #     if board.turn == chess.WHITE:
-    #        print("--------------")
-     #       print(board)
-      #      ch = input()
-       #     n = int(ch)
-        #    move = chess.Move(from_square(n, n), chess.to_square(n, n))
-        #   board.push(move)
-        # else:
-        #   print("--------------")
-        #  print(board)
-        # move = alphaBeta(board, 2, -math.inf, math.inf)[1]
-        # board.push(move)
-    # if board.is_game_over():
-     #   print("Resultat : ", board.result())
-      #  return
+# 3-3:
+
+# Mon IA à l'air de fonctionner il faut juste faire attention au clavier d'écrire les numéros correspondant aux lettres
+# exemple:
+# la colonne a est 0, colonne b est 1 ainsi de suite...
+# la ligne 1 est 0 la ligne 2 est 1 ainsi de suite ...
+
+# exemple:
+# je prend la piece que je veux déplacer:
+# f2 correspond donc à 51
+# je la déplace à l'endroit ou je veux qu'elle soit:
+# f3 correspond donc à 52
+
+# Dans la console il faut taper les numéros les uns en dessous des autres c'est-à-dire
+# il faut faire 5 puis (touche entrée) 3 puis (touche entrée) ect...
+
+def matchVsIA(board):
+    board = chess.Board()
+    while not board.is_game_over():
+        if board.turn == chess.WHITE:
+            print("--------------")
+            print(board)
+            ch1 = input()
+            n1 = int(ch1)
+            ch2 = input()
+            n2 = int(ch2)
+            ch3 = input()
+            n3 = int(ch3)
+            ch4 = input()
+            n4 = int(ch4)
+            move = chess.Move(chess.square(chess.square_file(
+                n1), n2), chess.square(chess.square_file(n3), n4))
+            board.push(move)
+        else:
+            print("--------------")
+            # print(board)
+            #move = alphaBeta(board, 2, -math.inf, math.inf)[1]
+            # board.push(move)
+            print(board)
+            board.push(randomMove(board))
+    if board.is_game_over():
+        print("Resultat : ", board.result())
+        return
 
 
 # print(matchVsIA(board))
