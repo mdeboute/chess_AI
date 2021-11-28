@@ -96,7 +96,6 @@ def formuleHeuristique(board):
     return heuristic
 
 
-# print(board.piece_map()[2])
 # print(formuleHeuristique(board_2))
 
 #------------------------------------------------------------------------------#
