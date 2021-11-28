@@ -325,7 +325,7 @@ def match_3():
             print(board)
             print("---------------")
         else:
-            move = minimax_pruning(board, 3, inf, -inf)[0]
+            move = minimax_pruning(board, 3, -inf, inf)[0]
             board.push(move)
             print(board)
             print("---------------")
@@ -366,7 +366,7 @@ def match_4():
             print(board)
             print("---------------")
         else:
-            move = minimax_pruning(board, 3, inf, -inf)[0]
+            move = minimax_pruning(board, 3, -inf, inf)[0]
             board.push(move)
             print(board)
             print("---------------")
