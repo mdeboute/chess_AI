@@ -52,7 +52,7 @@ def exhaustiveSearch(board, depth):
 
 
 # start = time.time()
-# print(exhaustiveSearch(board, 4))
+#print(exhaustiveSearch(board, 4))
 # end = time.time()
 # elapsed = end - start
 # print(f'Execution time: {elapsed:.2}ms')
@@ -62,6 +62,7 @@ def exhaustiveSearch(board, depth):
 # 2-2 HEURISITQUE DE SHANNON
 
 # Cette fonction calcule la formule heuristique uniquement avec les poids des pieces.
+
 
 def formuleHeuristique(board):
     if(board.is_game_over()):
@@ -96,7 +97,7 @@ def formuleHeuristique(board):
     return heuristic
 
 
-# print(formuleHeuristique(board_2))
+# print(formuleHeuristique(board))
 
 #------------------------------------------------------------------------------#
 
@@ -136,7 +137,7 @@ def MiniMax(board, depth, compter=False):
         return minEval, best_move, nbNoeuds
 
 
-# print(MiniMax(board_2, 2))
+#print(MiniMax(board_2, 2))
 
 #------------------------------------------------------------------------------#
 
@@ -340,7 +341,7 @@ def alphaBetaSearch(board, depth, alpha, beta):
         return minEval, best_move
 
 
-# print(iterativeDeepeningAlphaBeta(board))
+# print(iterativeDeepeningAlphaBeta(board_2))
 
 #------------------------------------------------------------------------------#
 
@@ -359,6 +360,7 @@ def alphaBetaSearch(board, depth, alpha, beta):
 
 # Dans la console il faut taper les numéros les uns en dessous des autres c'est-à-dire
 # il faut faire 5 puis (touche entrée) 3 puis (touche entrée) ect...
+
 
 def matchVsIA(board):
     board = chess.Board()
