@@ -5,13 +5,13 @@ from random import randint, choice
 
 def randomMove(b):
     '''Renvoie un mouvement au hasard sur la liste des mouvements possibles. Pour avoir un choix au hasard, il faut
-    construire explicitement tous les mouvements. Or, generate_legal_moves() nous donne un itérateur.'''
+    construire explicitement tous les mouvements. Or, generate_legal_moves() nous donne un itÃ©rateur.'''
     return choice([m for m in b.generate_legal_moves()])
 
 def deroulementRandom(b):
-    '''Déroulement d'une partie d'échecs au hasard des coups possibles. Cela va donner presque exclusivement
-    des parties très longues et sans gagnant. Cela illustre cependant comment on peut jouer avec la librairie
-    très simplement.'''
+    '''DÃ©roulement d'une partie d'Ã©checs au hasard des coups possibles. Cela va donner presque exclusivement
+    des parties trÃ¨s longues et sans gagnant. Cela illustre cependant comment on peut jouer avec la librairie
+    trÃ¨s simplement.'''
     print("----------")
     print(b)
     if b.is_game_over():
