@@ -1,3 +1,4 @@
+from re import A
 import time
 import chess
 from random import randint, choice
@@ -365,7 +366,24 @@ def alphaBetaSearch(board, depth, alpha, beta):
 # print(iterativeDeepeningAlphaBeta(board))
 
 
-#chess.square('e', 2)
-# ch=input()
-# print(ch)
-#board.from_square('e', 2)
+# def matchVsIA(board):
+ #   board = chess.Board()
+  #  while not board.is_game_over():
+   #     if board.turn == chess.WHITE:
+    #        print("--------------")
+     #       print(board)
+      #      ch = input()
+       #     n = int(ch)
+        #    move = chess.Move(from_square(n, n), chess.to_square(n, n))
+        #   board.push(move)
+        # else:
+        #   print("--------------")
+        #  print(board)
+        # move = alphaBeta(board, 2, -math.inf, math.inf)[1]
+        # board.push(move)
+    # if board.is_game_over():
+     #   print("Resultat : ", board.result())
+      #  return
+
+
+# print(matchVsIA(board))
