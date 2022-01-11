@@ -374,4 +374,4 @@ def match_4():
     print("---------------")
     print(board.outcome())
 
-# match_4()
+match_4()
