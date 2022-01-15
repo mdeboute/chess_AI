@@ -347,48 +347,38 @@ def alphaBetaSearch(board, depth, alpha, beta):
 
 # 3-3:
 
-# Mon IA à l'air de fonctionner il faut juste faire attention au clavier d'écrire les numéros correspondant aux lettres
-# exemple:
-# la colonne a est 0, colonne b est 1 ainsi de suite...
-# la ligne 1 est 0 la ligne 2 est 1 ainsi de suite ...
 
-# exemple:
-# je prend la piece que je veux déplacer:
-# f2 correspond donc à 51
-# je la déplace à l'endroit ou je veux qu'elle soit:
-# f3 correspond donc à 52
+def cuttoff_test(board):
+    if board.is_stalemate():
+        return True
+    elif board.is_fivefold_repetition():
+        return True
+    elif board.is_seventyfive_moves():
+        return True
+    elif board.is_insufficient_material():
+        return True
+    elif board.is_checkmate():
+        return True
+    else:
+        return False
 
-# Dans la console il faut taper les numéros les uns en dessous des autres c'est-à-dire
-# il faut faire 5 puis (touche entrée) 3 puis (touche entrée) ect...
+# this function create a match between a human and an iterative deepening
 
 
-def matchVsIA(board):
-    board = chess.Board()
-    while not board.is_game_over():
+def match_4():
+    board = chess.Board(
+        "rnb1kb1r/ppBppppp/7n/8/3PP3/3B1N1P/PPP2PP1/R2QK2R w KQq - 1 11")
+    while not cuttoff_test(board):
         if board.turn == chess.WHITE:
-            print("--------------")
-            print(board)
-            ch1 = input()
-            n1 = int(ch1)
-            ch2 = input()
-            n2 = int(ch2)
-            ch3 = input()
-            n3 = int(ch3)
-            ch4 = input()
-            n4 = int(ch4)
-            move = chess.Move(chess.square(chess.square_file(
-                n1), n2), chess.square(chess.square_file(n3), n4))
-            board.push(move)
+            move = input("\nEnter your move: ")
+            print("\n")
+            board.push_san(move)
         else:
-            print("--------------")
-            # print(board)
-            #move = alphaBeta(board, 2, -math.inf, math.inf)[1]
-            # board.push(move)
-            print(board)
-            board.push(randomMove(board))
-    if board.is_game_over():
-        print("Resultat : ", board.result())
-        return
+            move = alphaBeta(board, 3, -math.inf, math.inf)[1]
+            board.push(move)
+            print(move)
+            print("---------------")
+    print(board.outcome())
 
 
-# print(matchVsIA(board))
+match_4()
